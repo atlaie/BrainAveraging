@@ -531,9 +531,9 @@ if doRemov:
 
 
 # Load the choice and stimulus information quantities for each area over sessions (from the decoder analyses).
-df_choice = pd.read_csv('df_test_choiceInfo_allResponsive_200ms_new.csv')
+df_choice = pd.read_csv('df_test_choiceInfo_allResponsive_200ms.csv')
 df_choice.drop('Unnamed: 0', axis = 1, inplace = True)
-df_stim = pd.read_csv('df_test_stimInfo_allResponsive_200ms_new.csv')
+df_stim = pd.read_csv('df_test_stimInfo_allResponsive_200ms.csv')
 df_stim.drop('Unnamed: 0', axis = 1, inplace = True)
 
 # From the experimental datapoints, we construct the corresponding continuous distribution via Gaussian Kernel Estimation.

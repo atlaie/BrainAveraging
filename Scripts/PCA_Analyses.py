@@ -38,16 +38,11 @@ for m in range(39):
     b_all.append(b)
     b_uni.append(np.unique(b))
 
-
 # Change any of these to 1 in order to compute shufflings (doShuff) or subsampling (doSubSam) analyses.
 # If not, both of them are set to 0 for speed purposes.
 
 doShuff = 1
 doSubSam = 0
-
-
-dist_remov_correct = []
-dist_remov_incorrect = []
 
 # How many shufflings (numShuf), repetitions per subsampling (numSubRep) and subsamplings (numSamp) we want to explore. In the
 # paper we used 50, 10 and 10, respectively.
@@ -471,9 +466,9 @@ if doShuff:
 
 
 # Load the choice and stimulus information quantities for each area over sessions (from the decoder analyses).
-df_choice = pd.read_csv('df_test_choiceInfo_allResponsive_200ms_new.csv')
+df_choice = pd.read_csv('df_test_choiceInfo_allResponsive_200ms.csv')
 df_choice.drop('Unnamed: 0', axis = 1, inplace = True)
-df_stim = pd.read_csv('df_test_stimInfo_allResponsive_200ms_new.csv')
+df_stim = pd.read_csv('df_test_stimInfo_allResponsive_200ms.csv')
 df_stim.drop('Unnamed: 0', axis = 1, inplace = True)
 
 # From the experimental datapoints, we construct the corresponding continuous distribution via Gaussian Kernel Estimation.
@@ -579,11 +574,6 @@ colors = [sns.desaturate('blue', 0.2), sns.desaturate('red', 0.3), sns.desaturat
 colors2 = [sns.desaturate('blue', 0.9), sns.desaturate('red', 0.7), sns.desaturate('purple', 0.9), sns.desaturate('black', 0.5)]
 
 
-if doShuff:
-    fig, ax = plt.subplots(nrows=1)
-    plotBoxes(ax,df_spec_idx_fin2, df_surr_specIdx_fin2,b_fin,colors, colors2)
-    plt.axhline(0, color= 'black', linewidth = 2, alpha = 0.5, zorder = 1)
-
 data1 = df_measured_fin2
 data2 = df_wrong_fin2
 fig, ax = plt.subplots(figsize=(12, 8))
@@ -598,12 +588,6 @@ plotViolin(ax, data1, data2, b_fin, colors, colors2, 'HitMiss')
 fig, ax = plt.subplots(figsize=(8, 1))
 plotEffSizes(ax, data1, data2, b_fin, colors, colors2)
 
-
-data1 = df_specIdx_remov_hit_fin2
-data2 = df_specIdx_remov_miss_fin2
-fig, ax = plt.subplots()
-# plotScatterRemoval(ax, data1, data2, b_fin, colors, colors2, 'Correlation')
-plotScatterRemoval(ax, data1, data2, b_fin, colors, colors2, 'Spec Idx')
 
 greater1 = []
 greater2 = []
