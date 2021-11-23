@@ -5,7 +5,7 @@ import seaborn as sns
 import pandas as pd
 import scipy.stats as sts
 
-def plotViolin(ax, data1, data2, b_fin, colors, colors2, legend):
+def plotViolin(ax, data1, data2, b_fin, colors, colors2, legend, plotSpec):
     for i in range(data1.shape[1]):
         d1 = data1.iloc[:,i]
         v1 = ax.violinplot(dataset = [d1[~np.isnan(d1)]], positions=[i],
@@ -71,8 +71,10 @@ def plotViolin(ax, data1, data2, b_fin, colors, colors2, legend):
         elif b_fin.iloc[:, i].values == 'u_Unrelated':
             b.set_color(colors2[3])
 
-    plt.ylabel('Specificity Index', fontsize = 22)
-    plt.ylabel('Correlation', fontsize = 22)
+    if plotSpec:
+        plt.ylabel('Specificity Index', fontsize = 22)
+    else:
+        plt.ylabel('Correlation', fontsize = 22)
     plt.xticks(ticks = np.arange(0,data1.shape[1]), labels = data1.columns, rotation = 30, fontsize = 22)
     if legend == 'HitMiss':
         blue_patch = mpatches.Patch(color=colors[0], alpha = 0.5, label = 'Visual, hits')
@@ -101,20 +103,22 @@ def plotViolin(ax, data1, data2, b_fin, colors, colors2, legend):
         plt.legend(handles=[blue_patch, blue_patch_dark, red_patch, red_patch_dark, purple_patch, purple_patch_dark, gray_patch, gray_patch_dark],
                    fancybox=True, framealpha=1, shadow=True, loc='lower left', bbox_to_anchor=[0.05, 0.08, 0.35, 0.08],
                    bbox_transform=plt.gcf().transFigure, ncol=4, prop={'size': 22})
-    plt.show()
     plt.subplots_adjust(top=0.976,bottom=0.067,left=0.064,right=0.987,hspace=0.174,wspace=0.2)
+    plt.xticks(ticks=np.arange(0, data1.shape[1]), labels=data1.columns, rotation=30, fontsize=26)
 
-def plotBoxes(ax, data1, data1_surr, b_fin, colors, colors2):
+
+def plotBoxes(ax, data1, data1_surr, b_fin, colors, colors2,medians):
 
     cajas = sns.boxplot(data=data1, orient='v', color='blue',
                         boxprops=dict(color=colors[0], facecolor="blue", alpha=0.3),
                         medianprops=dict(color='blue', linewidth=3), whiskerprops=dict(color='blue'),
                         capprops=dict(color="blue"), zorder=3, showfliers=False, ax=ax)
-    for i in range(0, data1.shape[1]):
-        ax.plot(np.linspace(-0.4, 0.4, 3) + i, np.nanmedian(data1_surr.iloc[:, i]) * np.ones(3), ls=':',
-                   color='gray', lw=5)
+    if medians:
+        for i in range(0, data1.shape[1]):
+            ax.plot(np.linspace(-0.4, 0.4, 3) + i, np.nanmedian(data1_surr.iloc[:, i]) * np.ones(3), ls=':',
+                       color='gray', lw=5)
 
-    for i in range(data1_surr.shape[1]):
+    for i in range(data1.shape[1]):
         if b_fin.iloc[:, i].values == 'c_Choice':
             mybox = cajas.artists[i]
             mybox.set_facecolor(colors[1])
@@ -145,7 +149,8 @@ def plotBoxes(ax, data1, data1_surr, b_fin, colors, colors2):
                 line.set_color(colors2[3])
                 line.set_mfc(colors2[3])
                 line.set_mec(colors2[3])
-    plt.xticks(ticks=np.arange(0.2, data1.shape[1] + 0.2, 1), labels=data1.columns, rotation=30, fontsize=22)
+    plt.xticks(ticks=np.arange(0, data1.shape[1]), labels=data1.columns, rotation=30, fontsize=26)
+    plt.subplots_adjust(top=0.98,bottom=0.035,left=0.01,right=0.99,hspace=0.2,wspace=0.7)
 
 def plotSubsam(axes, v_list, spec_idx, b_fin, colors, colors2,numSamp):
     d1med = np.zeros((numSamp,len(b_fin.columns),3))
@@ -248,7 +253,7 @@ def plotEffSizes(ax, data1, data2, b_fin, colors, colors2):
     ax.set_ylim([0, 1])
     ax.axhline(0.5, lw=2, color='gray', alpha=0.5, ls='--')
     ax.set_ylabel(r"Cliff's $\delta$")
-    ax.set_xticklabels(ticks=np.arange(0, data1.shape[1]), labels=data1.columns, rotation=30, fontsize=16)
+    plt.xticks(ticks=np.arange(0, data1.shape[1]), labels=data1.columns, rotation=30, fontsize=26)
 
 def plotScatterRemoval(ax, data1, data2, b_fin, colors, colors2, ylab):
     counter = 0
@@ -284,3 +289,4 @@ def plotScatterRemoval(ax, data1, data2, b_fin, colors, colors2, ylab):
     elif ylab == 'Spec Idx':
         ax.set_ylabel(r"$(SpecIdx_{pop} - SpecIdx_{remov})/N$", fontsize=22)
         ax.set_ylim([-0.04, 0.04])
+    plt.xticks(ticks=np.arange(0, data1.shape[1]), labels=data1.columns, rotation=30, fontsize=26)

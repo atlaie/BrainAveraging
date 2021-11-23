@@ -16,7 +16,7 @@ from PlotFigures import *
 
 # Setting up plotting options and define a custom palette.
 font = {'family' : 'normal',
-        'size'   : 22}
+        'size'   : 26}
 rc('font', **font)
 
 rgb = [(1,1,1), ( 73/255, 111/255, 252/255 ), ( 252/255, 102/255, 65/255 )]
@@ -42,7 +42,7 @@ for m in range(39):
 # Change any of these to 1 in order to compute shufflings (doShuff), subsampling (doSubSam), one-neuron removal (doRemov),
 # or Fano Factor (doFano) analyses. If not, all of them are set to 0 for speed purposes.
 
-doShuff = 1
+doShuff = 0
 doSubSam = 0
 doRemov = 0
 doFano = 0
@@ -193,12 +193,7 @@ for m in range(39):
                                 ww[list(rands.keys())] = list(rands.values())
                                 cor_Sh[i, bb, s] = \
                                 np.corrcoef(ww, template_left_pop)[0, 1]
-                                aaa = choices(np.arange(0, popVectors.shape[1],1), template_right_pop/np.sum(template_right_pop),
-                                             k=int(np.sum(popVectors[i, :])))
 
-                                rands = Counter(aaa)
-                                ww = np.zeros_like(popVectors[i, :])
-                                ww[list(rands.keys())] = list(rands.values())
                                 cor_wrong_Sh[i, bb, s] = \
                                 np.corrcoef(ww, template_right_pop)[0, 1]
                                 specIdx_Sh[i,bb,s] =  cor_Sh[i,bb,s] - cor_wrong_Sh[i, bb, s]
@@ -234,11 +229,6 @@ for m in range(39):
                                 cor_Sh[i, bb, s] = \
                                     np.corrcoef(ww, template_right_pop)[0, 1]
 
-                                aaa = choices(np.arange(0, popVectors.shape[1]), template_left_pop/np.sum(template_left_pop),
-                                             k=int(np.sum(popVectors[i, :])))
-                                rands = Counter(aaa)
-                                ww = np.zeros_like(popVectors[i, :])
-                                ww[list(rands.keys())] = list(rands.values())
                                 cor_wrong_Sh[i, bb, s] = np.corrcoef(ww, template_left_pop)[0, 1]
                                 specIdx_Sh[i, bb, s] = cor_Sh[i, bb, s] - cor_wrong_Sh[i, bb, s]
 
@@ -649,9 +639,9 @@ pval_2 = []
 v1 = []
 v2 = []
 for i in range(df_measured_fin2.shape[1]):
-    u = df_measured_fin2.iloc[:,i]
-    v = df_wrong_fin2.iloc[:,i]
-    s, p = sts.mannwhitneyu(u, v, alternative = 'greater')
+    u = df_spec_idx_fin2.iloc[:,i]
+    v = df_surr_specIdx_fin2.iloc[:,i]
+    s, p = sts.mannwhitneyu(u, v)
     sign_2.append(s)
     pval_2.append(p)
 print(sign_2)
@@ -661,7 +651,7 @@ print(pval_2)
 doMulti = 0
 if doMulti:
     from statsmodels.stats.multitest import multipletests as mt
-    mt(np.array(pval_2), alpha = 0.05, method = 'fdr_bh')
+    print(mt(np.array(pval_2), alpha = 0.05, method = 'fdr_bh'))
 
 
 ## -------------------- Plotting part. --------------------
@@ -671,21 +661,20 @@ if doMulti:
 colors = [sns.desaturate('blue', 0.2), sns.desaturate('red', 0.3), sns.desaturate('purple', 0.2), sns.desaturate('gray', 0.3)]
 colors2 = [sns.desaturate('blue', 0.9), sns.desaturate('red', 0.7), sns.desaturate('purple', 0.9), sns.desaturate('black', 0.5)]
 
+
 if doShuff:
     fig, ax = plt.subplots(nrows=1)
-    plotBoxes(ax,df_spec_idx_fin2, df_surr_specIdx_fin2,b_fin,colors, colors2)
-    plt.axhline(0, color= 'black', linewidth = 2, alpha = 0.5, zorder = 1)
+    plotBoxes(ax, df_spec_idx_fin2, df_surr_specIdx_fin2, b_fin, colors, colors2, 1)
 
 data1 = df_measured_fin2
 data2 = df_wrong_fin2
 fig, ax = plt.subplots(figsize=(12, 8))
-plotViolin(ax, data1, data2, b_fin, colors, colors2, 'CorrWrong')
+plotViolin(ax, data1, data2, b_fin, colors, colors2, 'CorrWrong', plotSpec = 0)
 
 data1 = df_hit_fin2
 data2 = df_miss_fin2
 fig, ax = plt.subplots(figsize=(12, 8))
-plotViolin(ax, data1, data2, b_fin, colors, colors2, 'HitMiss')
-
+plotViolin(ax, data1, data2, b_fin, colors, colors2, 'HitMiss', plotSpec = 0)
 
 fig, ax = plt.subplots(figsize=(8, 1))
 plotEffSizes(ax, data1, data2, b_fin, colors, colors2)
